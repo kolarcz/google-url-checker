@@ -10,5 +10,5 @@ Automated web site monitoring with Google Apps Script
 
 ## Methods
 
-### &lt;urlChecker_instance>.check(*watchedUrlAddress*, *notifyEmailAddress*)
+### &lt;urlChecker_instance>.check(*watchedUrlAddress*, *notifyEmailAddress* [, *optionalCookies*])
 Check specified *watchedUrlAddress* and if change availability or http status due to previous state notify you to *notifyEmailAddress*.

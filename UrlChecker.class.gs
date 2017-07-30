@@ -4,25 +4,28 @@ function UrlChecker() {
 
 UrlChecker.prototype = {
 
-  getKey_: function (forUrl, forMail) {
-    return JSON.stringify([forUrl, forMail]);
+  getKey_: function (forUrl, forMail, forCookies) {
+    return JSON.stringify([forUrl, forMail, forCookies]);
   },
 
-  getLastState_: function (forUrl, forMail) {
-    var key = this.getKey_(forUrl, forMail);
+  getLastState_: function (forUrl, forMail, forCookies) {
+    var key = this.getKey_(forUrl, forMail, forCookies);
     return this.scriptProperties_.getProperty(key);
   },
 
-  setLastState_: function (forUrl, forMail, state) {
-    var key = this.getKey_(forUrl, forMail);
+  setLastState_: function (forUrl, forMail, forCookies, state) {
+    var key = this.getKey_(forUrl, forMail, forCookies);
     return this.scriptProperties_.setProperty(key, state);
   },
 
-  getUrlState_: function (url) {
+  getUrlState_: function (url, cookies) {
     try {
       return UrlFetchApp.fetch(url, {
         muteHttpExceptions: true,
-        followRedirects: false
+        followRedirects: false,
+        headers: {
+          Cookie: cookies || ''
+        }
       }).getResponseCode();
     }
     catch (e) {
@@ -30,13 +33,13 @@ UrlChecker.prototype = {
     }
   },
 
-  check: function (url, mail) {
-    var lastState = this.getLastState_(url, mail);
-    var actualState = this.getUrlState_(url);
+  check: function (url, mail, cookies) {
+    var lastState = this.getLastState_(url, mail, cookies);
+    var actualState = this.getUrlState_(url, cookies);
 
     if (actualState != lastState) {
       MailApp.sendEmail(mail, 'Url: ' + url + ' (' + actualState + ')', '');
-      this.setLastState_(url, mail, actualState);
+      this.setLastState_(url, mail, cookies, actualState);
     }
 
     return true;
